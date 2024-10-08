@@ -1,138 +1,142 @@
 <template>
     <div>
-        <!-- Overcomplicated header with redundant styles -->
-        <h1 style="color: purple; font-size: 60px; font-family: Impact">My Even Worse App</h1>
+        <!-- Simplified header with class-based styling -->
+        <h1 class="header">My Improved App</h1>
 
-        <!-- Completely hardcoded data -->
-        <p>Welcome, {{ user }}</p>
+        <!-- Display user with fallback for null value -->
+        <p>Welcome, {{ user || 'Guest' }}</p>
 
-        <!-- Deeply nested structure, unnecessary repetition -->
-        <div>
-            <div>
-                <div>
-                    <p v-if="true">This will always show</p>
-                </div>
-            </div>
-        </div>
+        <!-- Simplified structure -->
+        <p>This will always show</p>
 
         <div id="main-div">Main Div</div>
 
-        <!-- Overcomplicated calculation with mixed logic -->
-        <p>Calculated Value: {{ ((x * 100) / 2) + Math.random() }}</p>
+        <!-- Simplified calculation without randomness -->
+        <p>Calculated Value: {{ calculatedValue }}</p>
 
-        <!-- Inline JavaScript inside template, further anti-patterns -->
-        <p>{{ new Date().toString() }}</p>
+        <!-- Date is handled with a computed property instead of inline JS -->
+        <p>{{ currentDate }}</p>
 
-        <!-- Overcomplicated event handlers with inline logic -->
-        <button @click="console.log('Clicked!'); x = x + 1;">Click Me</button>
+        <!-- Event handler is now clean and functional -->
+        <button @click="incrementX">Click Me</button>
 
-        <!-- Hardcoded API calls without error handling -->
+        <!-- Fetch data with proper error handling -->
         <button @click="fetchData">Fetch Data</button>
 
-        <!-- Direct DOM manipulation still being used, mixing concerns -->
-        <button @click="document.getElementById('main-div').innerText = 'Updated Text'">Update Text</button>
+        <!-- Avoid direct DOM manipulation -->
+        <button @click="updateMainDivText">Update Text</button>
 
-        <!-- More inline logic -->
+        <!-- Clean condition for user data -->
         <p>{{ users.length > 0 ? users[0] : 'No users found' }}</p>
 
-        <!-- Nested v-for loops with hardcoded values -->
+        <!-- Nested v-for loops with dynamic data -->
         <ul>
-            <li v-for="user in users">{{ user }}</li>
-            <li v-for="n in 5">{{ n * 2 + 3 }}</li>
+            <li v-for="user in users" :key="user">{{ user }}</li>
+            <li v-for="n in 5" :key="n">{{ computedValue(n) }}</li>
         </ul>
 
-        <!-- Magic numbers and duplicated logic -->
+        <!-- Clean total value calculation -->
         <p>Total: {{ total.value + 50 }}</p>
 
-        <!-- Conflicting buttons and confusing functionality -->
-        <button @click="evalFunction">Run Eval</button>
-        <button @click="evalFunction">Run Eval Again</button>
+        <!-- Removed redundant buttons -->
+        <button @click="showAlert">Show Alert</button>
 
-        <!-- Ignored localization, hardcoded currency -->
-        <p>Amount: $100</p>
+        <!-- Use of localized currency format -->
+        <p>Amount: {{ formattedAmount }}</p>
     </div>
 </template>
 
 <script>
-import { ref, reactive, onMounted, watch, nextTick, computed } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 
 export default {
-    name: 'WorstComponent',
+    name: 'ImprovedComponent',
     setup() {
-        // Using ref for everything, ignoring proper reactivity for complex data
         const user = ref('John Doe');
-        const x = 20;
-        const users = ref([1, 2, 3, 4, 5]); // Hardcoded values, not fetched dynamically
-        const total = ref(100); // Hardcoded total
+        const x = ref(20);
+        const users = ref([1, 2, 3, 4, 5]);
+        const total = ref(100);
 
-        // Direct DOM manipulation in lifecycle hooks
+        // Setup a computed property for calculated value
+        const calculatedValue = computed(() => (x.value * 100) / 2);
+
+        // Computed property for the current date
+        const currentDate = computed(() => new Date().toLocaleString());
+
+        // Fetch API data with error handling
+        const fetchData = async () => {
+            try {
+                const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+                const data = await response.json();
+                console.log(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        // Method to update the main div text
+        const updateMainDivText = () => {
+            document.getElementById('main-div').innerText = 'Updated Text';
+        };
+
+        // Method to increment x value
+        const incrementX = () => {
+            x.value++;
+        };
+
+        // Remove eval usage, just show an alert
+        const showAlert = () => {
+            alert('This is much safer!');
+        };
+
+        // Method to compute a value in the v-for loop
+        const computedValue = (n) => n * 2 + 3;
+
+        // Formatted amount using a computed property for currency
+        const formattedAmount = computed(() => {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(100);
+        });
+
+        // Direct DOM manipulation for demo purposes, but should generally be avoided
         onMounted(() => {
-            document.getElementById('main-div').style.backgroundColor = 'yellow'; // Still using direct DOM manipulation
-            nextTick(() => {
-                document.title = 'Even Worse Title'; // Bad title setting pattern
-            });
+            document.getElementById('main-div').style.backgroundColor = 'lightyellow';
         });
-
-        // Overcomplicated and poorly handled API call, ignoring errors
-        const fetchData = () => {
-            const apiUrl = 'https://jsonplaceholder.typicode.com/posts';
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', apiUrl, true);
-            xhr.send();
-            xhr.onload = function () {
-                console.log(xhr.responseText); // No proper response handling
-            };
-        };
-
-        // Using eval in the worst possible way
-        const evalFunction = () => {
-            eval("alert('This is eval, don’t use me!')");
-        };
-
-        // Computed property with unnecessary complexity
-        const calculatedValue = computed(() => {
-            let sum = 0;
-            for (let i = 0; i < 10; i++) {
-                sum += i * 3; // Magic numbers in computation
-            }
-            return sum;
-        });
-
-        // Watchers set up for unnecessary or redundant monitoring
-        watch(
-            () => x,
-            (newVal, oldVal) => {
-                console.log(`Value changed from ${oldVal} to ${newVal}`); // No real use case
-            }
-        );
 
         return {
             user,
             x,
             users,
             total,
-            fetchData,
-            evalFunction,
             calculatedValue,
+            currentDate,
+            fetchData,
+            updateMainDivText,
+            incrementX,
+            showAlert,
+            computedValue,
+            formattedAmount,
         };
-    }
+    },
 };
 </script>
 
-<style>
-/* More inline styles and global IDs that will cause conflicts */
-#main-div {
-    padding: 50px;
-    background-color: lightblue;
+<style scoped>
+/* Use scoped styles to avoid global conflicts */
+.header {
+    color: purple;
+    font-size: 2.5rem;
+    font-family: 'Impact', sans-serif;
 }
 
-/* Overriding styles, making maintainability hard */
-h1 {
-    font-size: 70px !important;
+#main-div {
+    padding: 20px;
+    background-color: lightblue;
+    margin-top: 10px;
 }
 
 button {
     background-color: green;
-    font-size: 25px;
+    font-size: 1rem;
+    margin: 10px 0;
 }
 </style>
